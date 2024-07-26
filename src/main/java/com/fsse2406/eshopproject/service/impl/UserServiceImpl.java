@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService{
             return optionalUserEntity.get();
         }
 //     Lv3
-//        return uerRespository.findByFirebaseUid(firebaseUserData.getFirebaseUid()).orElseGet(
+//        return uerRespository.findByFirebaseUid(firebaseUserData.getFirebaseUId()).orElseGet(
 //                ()->userRepository.save(new UserEntity(firebaseUserData))
 //        );
     }

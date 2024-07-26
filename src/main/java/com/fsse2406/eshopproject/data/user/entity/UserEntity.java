@@ -18,16 +18,18 @@ public class UserEntity {
     @Column (unique = true, nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private List<TransactionEntity> transaction = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<TransactionEntity> transactionEntityList = new ArrayList<>();
 
     public UserEntity(){
 
     }
 
     public UserEntity(FirebaseUserData firebaseUserData){
+        this.uid = uid;
         this.firebaseUId = firebaseUserData.getFirebaseUId();
         this.email = firebaseUserData.getEmail();
+        this.transactionEntityList = transactionEntityList;
     }
 
     public Integer getUid() {
@@ -54,11 +56,12 @@ public class UserEntity {
         this.email = email;
     }
 
-    public List<TransactionEntity> getTransaction() {
-        return transaction;
+
+    public List<TransactionEntity> getTransactionEntityList() {
+        return transactionEntityList;
     }
 
-    public void setTransaction(List<TransactionEntity> transaction) {
-        this.transaction = transaction;
+    public void setTransactionEntityList(List<TransactionEntity> transactionEntityList) {
+        this.transactionEntityList = transactionEntityList;
     }
 }

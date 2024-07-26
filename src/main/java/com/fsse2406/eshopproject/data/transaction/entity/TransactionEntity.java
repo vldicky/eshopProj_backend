@@ -33,21 +33,19 @@ public class TransactionEntity {
     private BigDecimal total;
 
 
-
     @OneToMany (mappedBy = "transaction")
-    List<TransactionProductEntity> transactionProductEntityList = new ArrayList<>();
+    List<TransactionProductEntity> transactionProductEntityList;
 
     public TransactionEntity(){
 
     }
 
-    public TransactionEntity(UserEntity userEntity) {
-        this.tid = tid;
+    public TransactionEntity(UserEntity user) {
         this.user = user;
         this.transactDate = LocalDateTime.now();
         this.total = BigDecimal.ZERO;
         this.result = Status.Preparing;
-
+        this.transactionProductEntityList = transactionProductEntityList;
     }
 
     public Integer getTid() {
@@ -97,4 +95,5 @@ public class TransactionEntity {
     public void setTransactionProductEntityList(List<TransactionProductEntity> transactionProductEntityList) {
         this.transactionProductEntityList = transactionProductEntityList;
     }
+
 }

@@ -42,7 +42,7 @@ public class ProductApi {
         return productResponseDtoList;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{pid}")
     public ProductResponseDto getByPid(@PathVariable Integer pid){
 //   Lv2
 //        ProductResponseData productResponseData = productService.getByPid(pid);

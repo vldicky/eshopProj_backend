@@ -43,9 +43,24 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
     public ProductEntity getEntityByPid(Integer pid){
         return productRepository.findById(pid).orElseThrow(
                 ()-> new ProductNotFoundException(pid)
         );
     }
+
+    @Override
+    public boolean isValidQuantity(Integer quantity, Integer pid){  //revise and review need
+        ProductEntity entity = getEntityByPid(pid);
+        if(quantity<1){
+            return false;
+        }else if(quantity>entity.getStock()){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
 }

@@ -15,6 +15,7 @@ public class EshopProjectApplication {
         logger.info("hello welcome to connect to eshop database~~~!");
 
         SpringApplication.run(EshopProjectApplication.class, args);
+
     }
 
 }

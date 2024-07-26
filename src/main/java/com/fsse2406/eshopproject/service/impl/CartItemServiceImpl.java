@@ -83,10 +83,7 @@ public class CartItemServiceImpl implements CartItemService {
         try {
             UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
             ProductEntity productEntity = productService.getEntityByPid(pid);
-//            Optional<CartItemEntity> optionalCartItemEntity = cartItemRepository.findByProductAndUser(productEntity, userEntity);
-//            if(!productEntity.getPid().equals(pid)){
-//                throw new CartItemNotFoundException(pid);
-//            }
+
             CartItemEntity cartItemEntity = getEntityByProductAndUser(productEntity, userEntity);
             cartItemRepository.save(new CartItemEntity(productEntity, userEntity, quantity));
                 if(quantity > productEntity.getStock()){
@@ -94,7 +91,7 @@ public class CartItemServiceImpl implements CartItemService {
                 } else{
 //                CartItemEntity cartItemEntity = optionalCartItemEntity.get();
                 cartItemEntity.setQuantity(quantity);
-                if(cartItemEntity.getQuantity()>productEntity.getStock()){
+                if(cartItemEntity.getQuantity()> productEntity.getStock()){
                     throw new CartItemException("Quantity more than request available in stock");
                 }
                 return new CartItemResponseData(cartItemEntity);

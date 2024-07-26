@@ -7,32 +7,35 @@ import com.fsse2406.eshopproject.data.transaction.Status;
 import com.fsse2406.eshopproject.data.transaction.entity.TransactionEntity;
 import com.fsse2406.eshopproject.data.transaction_product.TransactionProductEntity;
 import com.fsse2406.eshopproject.data.transaction_product.response.data.TransactionProductResponseData;
+import com.fsse2406.eshopproject.data.user.domainObject.UserResponseData;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonPropertyOrder({"tid","buyer_uid","datetime","status","total","items"})
 public class TransactionResponseData {
+
     private Integer tid;
     @JsonProperty("buyer_uid")
-    private Integer uid;
+    private UserResponseData user;
+
     @JsonFormat(pattern="yyyyMMdd'T'HH:mm:ss")
     private LocalDateTime transactDate;
 
     private Status result;
+
     private BigDecimal total;
 
     List<TransactionProductResponseData> transactionProductEntityList = new ArrayList<>();
 
-    public TransactionResponseData(TransactionEntity entity) {
+    public TransactionResponseData(TransactionEntity entity, List<TransactionProductEntity> transactionProductEntityList) {
         this.tid = entity.getTid();
-        this.uid = entity.getUser().getUid();
+        this.user = new UserResponseData(entity.getUser());
         this.transactDate = entity.getTransactDate();
         this.total = entity.getTotal();
         this.result = entity.getResult();
-        setTransactionProductEntityList(entity);
+        setTransactionProductEntityList(transactionProductEntityList);
     }
 
     public Integer getTid() {
@@ -43,12 +46,12 @@ public class TransactionResponseData {
         this.tid = tid;
     }
 
-    public Integer getUid() {
-        return uid;
+    public UserResponseData getUser() {
+        return user;
     }
 
-    public void setUid(Integer uid) {
-        this.uid = uid;
+    public void setUser(UserResponseData user) {
+        this.user = user;
     }
 
     public LocalDateTime getTransactDate() {
@@ -79,12 +82,12 @@ public class TransactionResponseData {
         return transactionProductEntityList;
     }
 
-    public void setTransactionProductEntityList(List<TransactionProductResponseData> transactionProductEntityList) {
-        this.transactionProductEntityList = transactionProductEntityList;
-    }
+//    public void setTransactionProductEntityList(List<TransactionProductResponseData> transactionProductEntityList) {
+//        this.transactionProductEntityList = transactionProductEntityList;
+//    }
 
-    public void setTransactionProductEntityList(TransactionEntity entity){
-        for(TransactionProductEntity transactionProductEntity: entity.getTransactionProductEntityList()){
+    public void setTransactionProductEntityList(List<TransactionProductEntity> entityList){
+        for(TransactionProductEntity transactionProductEntity: entityList){
             this.transactionProductEntityList.add(new TransactionProductResponseData(transactionProductEntity));
         }
     }

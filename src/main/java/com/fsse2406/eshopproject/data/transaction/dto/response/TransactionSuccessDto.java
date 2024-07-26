@@ -1,11 +1,8 @@
-package com.fsse2406.eshopproject.data.cartitem.dto.response;
+package com.fsse2406.eshopproject.data.transaction.dto.response;
 
-public class SuccessResponseDto {
+public class TransactionSuccessDto {
     private String result;
 
-    public SuccessResponseDto(String result) {
-        this.result = result;
-    }
 
     public String getResult() {
         return result;
