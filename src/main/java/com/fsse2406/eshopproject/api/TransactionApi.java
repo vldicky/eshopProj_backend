@@ -46,7 +46,7 @@ public class TransactionApi {
     }
 
     @PatchMapping("/{tid}/pay")
-    public void updateTransaction(JwtAuthenticationToken jwt,
+    public void payTransaction(JwtAuthenticationToken jwt,
                                   @Positive @PathVariable Integer tid){
         FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
         transactionService.updateTransaction(firebaseUserData, tid);

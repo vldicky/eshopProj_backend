@@ -7,14 +7,17 @@ import com.fsse2406.eshopproject.data.transaction.dto.response.TransactionRespon
 import com.fsse2406.eshopproject.data.transaction.entity.TransactionEntity;
 import com.fsse2406.eshopproject.data.transaction_product.TransactionProductEntity;
 import com.fsse2406.eshopproject.data.user.domainObject.FirebaseUserData;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public interface TransactionService {
     TransactionResponseData createprepareTransaction(FirebaseUserData firebaseUserData);
-    boolean updateTransaction(FirebaseUserData firebaseUserData, Integer tid);
 //    TransactionEntity getEntityByTid(Integer tid);
     TransactionResponseData getTransactById(FirebaseUserData firebaseUserData, Integer tid);
+    @Transactional
+    boolean payTransaction(FirebaseUserData firebaseUserData, Integer tid);
+
     TransactionResponseData finishTransaction(FirebaseUserData firebaseUserData, Integer tid);
 }

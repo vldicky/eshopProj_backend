@@ -5,10 +5,8 @@ import com.fsse2406.eshopproject.data.transaction.Status;
 import com.fsse2406.eshopproject.data.transaction.data.response.TransactionResponseData;
 import com.fsse2406.eshopproject.data.transaction.entity.TransactionEntity;
 import com.fsse2406.eshopproject.data.transaction_product.TransactionProductEntity;
-import com.fsse2406.eshopproject.data.transaction_product.response.data.TransactionProductResponseData;
 import com.fsse2406.eshopproject.data.user.domainObject.FirebaseUserData;
 import com.fsse2406.eshopproject.data.user.entity.UserEntity;
-import com.fsse2406.eshopproject.exception.cart.CartItemException;
 import com.fsse2406.eshopproject.exception.transaction.PrepareTransactionException;
 import com.fsse2406.eshopproject.exception.transaction.TransactionNotFoundException;
 import com.fsse2406.eshopproject.repository.CartItemRepository;
@@ -19,6 +17,7 @@ import com.fsse2406.eshopproject.service.CartItemService;
 import com.fsse2406.eshopproject.service.TransactionProductService;
 import com.fsse2406.eshopproject.service.TransactionService;
 import com.fsse2406.eshopproject.service.UserService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -95,7 +94,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public boolean updateTransaction(FirebaseUserData firebaseUserData, Integer tid){   //check entitylist by Transaction & FirebaseUserData (same missing in
+    @Transactional
+    public boolean payTransaction(FirebaseUserData firebaseUserData, Integer tid){   //check entitylist by Transaction & FirebaseUserData (same missing in
         try {
             TransactionEntity transactionEntity = getEntityByTransactAndUser(tid,firebaseUserData);
             if (transactionEntity.getResult() != Status.Preparing) {

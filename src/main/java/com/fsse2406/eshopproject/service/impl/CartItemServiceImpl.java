@@ -79,23 +79,21 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    @Transactional
     public CartItemResponseData updateCart(Integer pid, Integer quantity, FirebaseUserData firebaseUserData){ //CartItemResponseData no need updateCartItemResponse as there are cart show **quantity with relevant pid only
         try {
             UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
             ProductEntity productEntity = productService.getEntityByPid(pid);
 
             CartItemEntity cartItemEntity = getEntityByProductAndUser(productEntity, userEntity);
-            cartItemRepository.save(new CartItemEntity(productEntity, userEntity, quantity));
-                if(quantity > productEntity.getStock()){
-                    throw new CartItemException("Quantity should not more than stock available");
-                } else{
-//                CartItemEntity cartItemEntity = optionalCartItemEntity.get();
-                cartItemEntity.setQuantity(quantity);
-                if(cartItemEntity.getQuantity()> productEntity.getStock()){
-                    throw new CartItemException("Quantity more than request available in stock");
-                }
-                return new CartItemResponseData(cartItemEntity);
+            validateQuantity(quantity, productEntity.getStock());
+//            cartItemRepository.save(new CartItemEntity(productEntity, userEntity, quantity));
+            cartItemEntity.setQuantity(quantity);
+            if(cartItemEntity.getQuantity()> productEntity.getStock()){
+                throw new CartItemException("Quantity more than request available in stock");
             }
+            return new CartItemResponseData(cartItemEntity);
+
         }catch(Exception ex){
             logger.warn("Update cart failed ", ex.getMessage());
             throw ex;
@@ -127,10 +125,10 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     public List<CartItemEntity> getEntityListByUser(UserEntity userEntity){
-        for(CartItemEntity cartItemEntity: cartItemRepository.findAllByUser(userEntity)) {
-            cartItemEntity.getProduct();
-        }
-        return getEntityListByUser(userEntity);
+
+        List<CartItemEntity> cartItemEntityList = cartItemRepository.findAllByUser(userEntity);
+
+        return cartItemEntityList;
     }
 
     public CartItemEntity getEntityByProductAndUser(ProductEntity productEntity, UserEntity userEntity){
@@ -141,7 +139,8 @@ public class CartItemServiceImpl implements CartItemService {
 
     public void validateQuantity(Integer quantity, Integer stock){
         if(quantity > stock){
-            throw new CartItemException("Quantity should not more than stock available");
+            throw new CartItemException(
+                    String.format("Quantity should not more than stock quantity:%d, stock:%d", quantity, stock));
         }
     }
 

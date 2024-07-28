@@ -13,5 +13,5 @@ import java.util.Optional;
 @Repository
 public interface TransactionRepository extends CrudRepository<TransactionEntity,Integer> {
     Optional<TransactionEntity> findByTidAndUserFirebaseUId(Integer tid, FirebaseUserData firebaseUserData);
-    List<TransactionProductEntity> findByTransactionEntity(TransactionEntity transactionEntity, UserEntity user);
+//    List<TransactionProductEntity> findByTransactionEntity(TransactionEntity transactionEntity, UserEntity user);
 }

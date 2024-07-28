@@ -12,6 +12,7 @@ public interface ProductService {
     List<ProductResponseData> getallProducts();
     ProductResponseData getByPid(Integer pid);
     ProductEntity getEntityByPid(Integer pid);
+//    boolean isValidQuantity(Integer quantity, Integer pid);
 
-    boolean isValidQuantity(Integer quantity, Integer pid);
+    boolean isValidQuantity(Integer quantity, ProductEntity entity);
 }

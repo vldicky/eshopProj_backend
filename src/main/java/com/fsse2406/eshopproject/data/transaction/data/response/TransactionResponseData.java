@@ -2,7 +2,6 @@ package com.fsse2406.eshopproject.data.transaction.data.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fsse2406.eshopproject.data.transaction.Status;
 import com.fsse2406.eshopproject.data.transaction.entity.TransactionEntity;
 import com.fsse2406.eshopproject.data.transaction_product.TransactionProductEntity;

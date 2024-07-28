@@ -51,16 +51,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean isValidQuantity(Integer quantity, Integer pid){  //revise and review need
-        ProductEntity entity = getEntityByPid(pid);
+    public boolean isValidQuantity(Integer quantity, ProductEntity entity){  //revise and review need- Integer pid, use Product Entity??
+//        ProductEntity entity = getEntityByPid(pid);
         if(quantity<1){
             return false;
         }else if(quantity>entity.getStock()){
             return false;
-        }else{
-            return true;
         }
+        return true;
 
+    }
+
+    public boolean deductStock(ProductEntity entity, Integer amount){ //deductable or not check once the update process of transaction- avoid null pointer exception and paysafe to pervious/teammate handler
+        if(isValidQuantity(amount,entity)){
+            return false;
+        }
+        entity.setStock(entity.getStock()-amount);
+        productRepository.save(entity);
+        return true;
     }
 
 }
