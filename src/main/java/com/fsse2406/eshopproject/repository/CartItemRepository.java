@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public interface CartItemRepository extends CrudRepository<CartItemEntity, Integer>{
     Optional<CartItemEntity> findByProductAndUser(ProductEntity product, UserEntity user);
-//    Optional<CartItemEntity> findByPid(Integer pid);
+
     List<CartItemEntity> findAllByUser(UserEntity userEntity);
-//    Integer removeByProductAndQPid_User(Integer pid, FirebaseUserData firebaseUserData);   // missed to checking the removal Product pid_user in task 6
-    List<CartItemEntity> findAllByCid(Integer cid);
+    Integer removeByProductAndPid_User(Integer pid, FirebaseUserData firebaseUserData);   // missed to checking the removal Product pid_user in task 6
+    void deleteAllByUser(String firebaseUId);
 }

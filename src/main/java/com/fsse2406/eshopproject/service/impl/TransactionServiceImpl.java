@@ -7,19 +7,18 @@ import com.fsse2406.eshopproject.data.transaction.entity.TransactionEntity;
 import com.fsse2406.eshopproject.data.transaction_product.TransactionProductEntity;
 import com.fsse2406.eshopproject.data.user.domainObject.FirebaseUserData;
 import com.fsse2406.eshopproject.data.user.entity.UserEntity;
+import com.fsse2406.eshopproject.exception.transaction.PayTransactionException;
 import com.fsse2406.eshopproject.exception.transaction.PrepareTransactionException;
 import com.fsse2406.eshopproject.exception.transaction.TransactionNotFoundException;
 import com.fsse2406.eshopproject.repository.CartItemRepository;
 import com.fsse2406.eshopproject.repository.TransactionProductRepository;
 import com.fsse2406.eshopproject.repository.TransactionRepository;
 import com.fsse2406.eshopproject.repository.UserRepository;
-import com.fsse2406.eshopproject.service.CartItemService;
-import com.fsse2406.eshopproject.service.TransactionProductService;
-import com.fsse2406.eshopproject.service.TransactionService;
-import com.fsse2406.eshopproject.service.UserService;
+import com.fsse2406.eshopproject.service.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -36,9 +35,10 @@ public class TransactionServiceImpl implements TransactionService {
     private final CartItemService cartItemService;
     private final TransactionProductService transactionProductService;
     private final TransactionProductRepository transactionProductRepository;
+    private final ProductService productService;
+    private final TransactionService transactionService;
 
-
-    public TransactionServiceImpl(TransactionProductRepository transactionProductRepository,UserService userService, UserRepository userRepository, CartItemRepository cartItemRepository, CartItemService cartItemService, TransactionRepository transactionRepository, TransactionProductService transactionProductService) {
+    public TransactionServiceImpl(ProductService productService, TransactionProductRepository transactionProductRepository, UserService userService, UserRepository userRepository, CartItemRepository cartItemRepository, CartItemService cartItemService, TransactionRepository transactionRepository, TransactionProductService transactionProductService, @Qualifier("transactionService") TransactionService transactionService) {
         this.transactionRepository = transactionRepository;
         this.cartItemRepository = cartItemRepository;
         this.userService = userService;
@@ -46,6 +46,8 @@ public class TransactionServiceImpl implements TransactionService {
         this.userRepository = userRepository;
         this.cartItemService = cartItemService;
         this.transactionProductRepository = transactionProductRepository;
+        this.productService = productService;
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -99,14 +101,21 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             TransactionEntity transactionEntity = getEntityByTransactAndUser(tid,firebaseUserData);
             if (transactionEntity.getResult() != Status.Preparing) {
-                transactionEntity.getTid();
+                throw new PayTransactionException("Status Error Exist!");
             }
-            if (!transactionEntity.getTid().equals(tid)) {
-                throw new TransactionNotFoundException("Transaction Not Found");
-            } else {
+            List<TransactionProductEntity> transactionProductEntityList = transactionProductService.getEntityListByTransaction(transactionEntity);
+                for(TransactionProductEntity transactionProductEntity: transactionProductEntityList) {
+                    if (productService.isValidQuantity(transactionProductEntity.getQuantity(), transactionProductEntity.getPid())) {
+                        throw new PayTransactionException(String.format("Not Enough Stock - %d"+transactionProductEntity.getPid()));
+                    }
+                }
+                for(TransactionProductEntity transactionProductEntity: transactionProductEntityList) {
+                    productService.deductStock(transactionProductEntity.getQuantity(), transactionProductEntity.getPid());
+
+                }
                 transactionEntity.setResult(Status.Processing);
+                transactionRepository.save(transactionEntity);
                 return true;
-            }
 
         }catch(Exception ex){
             logger.warn("Update transaction status failed ", ex.getMessage());
@@ -122,6 +131,13 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public TransactionResponseData finishTransaction (FirebaseUserData firebaseUserData, Integer tid){
-        return null;
+        TransactionEntity transactionEntity = getEntityByTransactAndUser(tid,firebaseUserData);
+        if(transactionEntity.getResult() !=Status.Processing){
+            throw new PayTransactionException("Status Error");
+        }
+        cartItemService.emptyUserCart(firebaseUserData.getFirebaseUId());
+        transactionEntity.setResult(Status.Finish);
+        return new TransactionResponseData(transactionEntity,
+                transactionProductService.getEntityListByTransaction(transactionEntity));
     }
 }

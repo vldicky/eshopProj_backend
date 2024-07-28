@@ -2,6 +2,7 @@ package com.fsse2406.eshopproject.api;
 
 import com.fsse2406.eshopproject.data.transaction.data.response.TransactionResponseData;
 import com.fsse2406.eshopproject.data.transaction.dto.response.TransactionResponseDto;
+import com.fsse2406.eshopproject.data.transaction.dto.response.TransactionSuccessDto;
 import com.fsse2406.eshopproject.data.user.domainObject.FirebaseUserData;
 import com.fsse2406.eshopproject.repository.TransactionRepository;
 import com.fsse2406.eshopproject.service.TransactionService;
@@ -46,10 +47,11 @@ public class TransactionApi {
     }
 
     @PatchMapping("/{tid}/pay")
-    public void payTransaction(JwtAuthenticationToken jwt,
-                                  @Positive @PathVariable Integer tid){
+    public TransactionSuccessDto payTransaction(JwtAuthenticationToken jwt,
+                                                @Positive @PathVariable Integer tid){
         FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
-        transactionService.updateTransaction(firebaseUserData, tid);
+        transactionService.payTransaction(firebaseUserData, tid);
+        return new TransactionSuccessDto();
 
     }
 

@@ -6,7 +6,6 @@ import com.fsse2406.eshopproject.data.product.entity.ProductEntity;
 import com.fsse2406.eshopproject.data.user.domainObject.FirebaseUserData;
 import com.fsse2406.eshopproject.data.user.entity.UserEntity;
 import com.fsse2406.eshopproject.exception.cart.CartItemException;
-import com.fsse2406.eshopproject.exception.cart.CartItemNotFoundException;
 import com.fsse2406.eshopproject.repository.CartItemRepository;
 import com.fsse2406.eshopproject.repository.ProductRepository;
 import com.fsse2406.eshopproject.repository.UserRepository;
@@ -107,10 +106,10 @@ public class CartItemServiceImpl implements CartItemService {
             UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
             ProductEntity productEntity = productService.getEntityByPid(pid);
             Optional<CartItemEntity> optionalCartItemEntity = cartItemRepository.findByProductAndUser(productEntity, userEntity);
-//            Optional<CartItemEntity> optionalCartItemEntity1 = cartItemRepository.findByPid(pid);
-//            List<CartItemEntity> cartItemEntityList = new ArrayList<>();
-//            CartItemResponseData cartItemResponseData = new CartItemResponseData(optionalCartItemEntity.get());
-//            if(deleteCount<=0)  ==> haven't checked the removal if -ve status exist and raise Exception
+
+            if(deleteCount<=0){// ==> haven't checked the removal if -ve status exist and raise Exception
+                throw new CartItemException("Delete CartItem failed pid= "+ pid);
+            }
             for(CartItemEntity cartItemEntity: cartItemRepository.findAll()){
                 if (!productEntity.getPid().equals(pid)) {
                     continue;
@@ -142,6 +141,11 @@ public class CartItemServiceImpl implements CartItemService {
             throw new CartItemException(
                     String.format("Quantity should not more than stock quantity:%d, stock:%d", quantity, stock));
         }
+    }
+
+    @Override
+    public void emptyUserCart(String firebaseUId){
+        cartItemRepository.deleteAllByUser(firebaseUId);
     }
 
 }
