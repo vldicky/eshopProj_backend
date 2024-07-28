@@ -12,7 +12,7 @@ public class CartItemEntity {
     private Integer cid;
 
     @ManyToOne
-    @JoinColumn(name="pid",referencedColumnName = "pid", nullable = false)
+    @JoinColumn(name="pid", referencedColumnName = "pid", nullable = false)
     private ProductEntity product;
 
     @ManyToOne

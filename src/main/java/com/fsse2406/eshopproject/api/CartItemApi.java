@@ -37,7 +37,7 @@ public class CartItemApi {
 
         FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
         cartItemService.putCartItem(pid,quantity,firebaseUserData);
-        return new SuccessResponseDto("SUCCESS");
+        return new SuccessResponseDto();
     }
 
     @GetMapping
@@ -61,11 +61,11 @@ public class CartItemApi {
         return new CartItemResponseDto(cartItemService.updateCart(pid,quantity, firebaseUserData));
     }
 
-    @PatchMapping("/{pid}")
+    @DeleteMapping("/{pid}")
     public SuccessResponseDto removeCartItem(JwtAuthenticationToken jwt, @PathVariable Integer pid){
         FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
-        cartItemService.removeCartItem(pid,firebaseUserData);
-        return new SuccessResponseDto("SUCCESS");
+        cartItemService.removeCartItem(firebaseUserData,pid);
+        return new SuccessResponseDto();
     }
 
 }

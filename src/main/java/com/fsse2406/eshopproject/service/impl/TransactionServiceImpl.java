@@ -18,7 +18,6 @@ import com.fsse2406.eshopproject.service.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -36,9 +35,9 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionProductService transactionProductService;
     private final TransactionProductRepository transactionProductRepository;
     private final ProductService productService;
-    private final TransactionService transactionService;
 
-    public TransactionServiceImpl(ProductService productService, TransactionProductRepository transactionProductRepository, UserService userService, UserRepository userRepository, CartItemRepository cartItemRepository, CartItemService cartItemService, TransactionRepository transactionRepository, TransactionProductService transactionProductService, @Qualifier("transactionService") TransactionService transactionService) {
+
+    public TransactionServiceImpl(ProductService productService, TransactionProductRepository transactionProductRepository, UserService userService, UserRepository userRepository, CartItemRepository cartItemRepository, CartItemService cartItemService, TransactionRepository transactionRepository, TransactionProductService transactionProductService) {
         this.transactionRepository = transactionRepository;
         this.cartItemRepository = cartItemRepository;
         this.userService = userService;
@@ -47,7 +46,6 @@ public class TransactionServiceImpl implements TransactionService {
         this.cartItemService = cartItemService;
         this.transactionProductRepository = transactionProductRepository;
         this.productService = productService;
-        this.transactionService = transactionService;
     }
 
     @Override
@@ -55,7 +53,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
             List<CartItemEntity> userCart = cartItemService.getEntityListByUser(userEntity);
-            if(userCart.isEmpty()){ //UserCart need to define first
+            if (userCart.isEmpty()) { //UserCart need to define first
                 throw new PrepareTransactionException("Cart is empty & not found!");
             }
             TransactionEntity transactionEntity = new TransactionEntity(userEntity); //transactionService.getEntityByTid(Integer tid);
@@ -63,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
 
             List<TransactionProductEntity> transactionProductEntityList = new ArrayList<>();
             BigDecimal total = BigDecimal.ZERO;
-            for(CartItemEntity cartItemEntity: userCart){
+            for (CartItemEntity cartItemEntity : userCart) {
                 TransactionProductEntity transactionProductEntity = transactionProductService.createTransactionProduct(transactionEntity, cartItemEntity);
                 transactionProductEntityList.add(transactionProductEntity);
                 total = total.add(
@@ -74,70 +72,77 @@ public class TransactionServiceImpl implements TransactionService {
             transactionEntity.setTotal(total);
 //            transactionEntity = transactionRepository.findById(transactionEntity.getTid()).get();
             transactionEntity = transactionRepository.save(transactionEntity);
-            return new TransactionResponseData(transactionEntity,transactionProductEntityList);
+            return new TransactionResponseData(transactionEntity, transactionProductEntityList);
 
-        }catch(Exception ex){
-            logger.warn("Prepare Transaction "+ex.getMessage());
+        } catch (Exception ex) {
+            logger.warn("Prepare Transaction " + ex.getMessage());
             throw ex;
         }
     }
 
     @Override
-    public TransactionResponseData getTransactById(FirebaseUserData firebaseUserData, Integer tid){
-        try{
-            TransactionEntity transactionEntity = getEntityByTransactAndUser(tid,firebaseUserData);   //check Transaction & FirebaseUserData entry first need auth
+    public TransactionResponseData getTransactById(FirebaseUserData firebaseUserData, Integer tid) {
+        try {
+            TransactionEntity transactionEntity = getEntityByTransactAndUser(firebaseUserData.getFirebaseUId(), tid);   //check Transaction & FirebaseUserData entry first need auth
             List<TransactionProductEntity> transactionProductEntityList = transactionProductService.getEntityListByTransaction(transactionEntity);
-            return new TransactionResponseData(transactionEntity,transactionProductEntityList);
+            return new TransactionResponseData(transactionEntity, transactionProductEntityList);
 
-        }catch(Exception ex){
-            logger.warn("Search By Transaction Id"+ex.getMessage());
+        } catch (Exception ex) {
+            logger.warn("Search By Transaction Id" + ex.getMessage());
             throw ex;
         }
+    }
+
+    @Override
+    public boolean payTransaction(FirebaseUserData firebaseUserData, Integer tid) {   //check entitylist by Transaction & FirebaseUserData (same missing in
+        try {
+            TransactionEntity transactionEntity = getEntityByTransactAndUser(firebaseUserData.getFirebaseUId(), tid);
+            if (transactionEntity.getResult() != Status.PREPARE) {
+                throw new PayTransactionException("Status Error Exist!");
+            }
+            List<TransactionProductEntity> transactionProductEntityList = transactionProductService.getEntityListByTransaction(transactionEntity);
+            for (TransactionProductEntity transactionProductEntity : transactionProductEntityList) {
+                if (!productService.isValidQuantity(transactionProductEntity.getQuantity(), transactionProductEntity.getPid())) {
+                    throw new PayTransactionException("Not Enough Stock - pid" + transactionProductEntity.getPid());
+                }
+            }
+            for (TransactionProductEntity transactionProductEntity : transactionProductEntityList) {
+                productService.deductStock(transactionProductEntity.getQuantity(), transactionProductEntity.getPid());
+            }
+            transactionEntity.setResult(Status.PROCESS);
+            transactionRepository.save(transactionEntity);
+            return true;
+
+        } catch (Exception ex) {
+            logger.warn("Update transaction status failed " + ex.getMessage());
+            throw ex;
+        }
+
+    }
+
+    public TransactionEntity getEntityByTransactAndUser(String firebaseUserData, Integer tid) {
+        return transactionRepository.findByUser_FirebaseUIdAndTid(firebaseUserData, tid).orElseThrow(
+                () -> new TransactionNotFoundException("Transaction Not Found: " + tid + "," + firebaseUserData)
+        );
     }
 
     @Override
     @Transactional
-    public boolean payTransaction(FirebaseUserData firebaseUserData, Integer tid){   //check entitylist by Transaction & FirebaseUserData (same missing in
+    public TransactionResponseData finishTransaction(FirebaseUserData firebaseUserData, Integer tid) {
         try {
-            TransactionEntity transactionEntity = getEntityByTransactAndUser(tid,firebaseUserData);
-            if (transactionEntity.getResult() != Status.Preparing) {
-                throw new PayTransactionException("Status Error Exist!");
+            TransactionEntity transactionEntity = getEntityByTransactAndUser(firebaseUserData.getFirebaseUId(), tid);
+            if (transactionEntity.getResult() != Status.PROCESS) {
+                throw new PayTransactionException("Status Error");
             }
-            List<TransactionProductEntity> transactionProductEntityList = transactionProductService.getEntityListByTransaction(transactionEntity);
-                for(TransactionProductEntity transactionProductEntity: transactionProductEntityList) {
-                    if (productService.isValidQuantity(transactionProductEntity.getQuantity(), transactionProductEntity.getPid())) {
-                        throw new PayTransactionException(String.format("Not Enough Stock - %d"+transactionProductEntity.getPid()));
-                    }
-                }
-                for(TransactionProductEntity transactionProductEntity: transactionProductEntityList) {
-                    productService.deductStock(transactionProductEntity.getQuantity(), transactionProductEntity.getPid());
-
-                }
-                transactionEntity.setResult(Status.Processing);
-                transactionRepository.save(transactionEntity);
-                return true;
+            cartItemService.emptyUserCart(firebaseUserData.getFirebaseUId());
+            transactionEntity.setResult(Status.SUCCESS);
+            return new TransactionResponseData(transactionEntity,
+                    transactionProductService.getEntityListByTransaction(transactionEntity));
 
         }catch(Exception ex){
-            logger.warn("Update transaction status failed ", ex.getMessage());
+            logger.warn("Final transaction status failed " + ex.getMessage());
             throw ex;
         }
 
-    }
-
-    public TransactionEntity getEntityByTransactAndUser(Integer tid, FirebaseUserData firebaseUserData){
-        return transactionRepository.findByTidAndUserFirebaseUId(tid,firebaseUserData).orElseThrow(
-                ()-> new TransactionNotFoundException("Transaction Not Found: "+tid+","+firebaseUserData.getFirebaseUId())
-        );
-    }
-
-    public TransactionResponseData finishTransaction (FirebaseUserData firebaseUserData, Integer tid){
-        TransactionEntity transactionEntity = getEntityByTransactAndUser(tid,firebaseUserData);
-        if(transactionEntity.getResult() !=Status.Processing){
-            throw new PayTransactionException("Status Error");
-        }
-        cartItemService.emptyUserCart(firebaseUserData.getFirebaseUId());
-        transactionEntity.setResult(Status.Finish);
-        return new TransactionResponseData(transactionEntity,
-                transactionProductService.getEntityListByTransaction(transactionEntity));
     }
 }

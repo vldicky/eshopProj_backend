@@ -26,7 +26,6 @@ public class UserEntity {
     }
 
     public UserEntity(FirebaseUserData firebaseUserData){
-        this.uid = uid;
         this.firebaseUId = firebaseUserData.getFirebaseUId();
         this.email = firebaseUserData.getEmail();
         this.transactionEntityList = transactionEntityList;

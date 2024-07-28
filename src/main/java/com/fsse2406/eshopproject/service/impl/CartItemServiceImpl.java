@@ -40,25 +40,20 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    @Transactional
     public boolean putCartItem(Integer pid, Integer quantity, FirebaseUserData firebaseUserData){
         try{
             UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
             ProductEntity productEntity = productService.getEntityByPid(pid);
+
             Optional<CartItemEntity> optionalCartItemEntity = cartItemRepository.findByProductAndUser(productEntity, userEntity);
             if(optionalCartItemEntity.isEmpty()){
                 validateQuantity(quantity, productEntity.getStock());
-                CartItemEntity cartItemEntity = new CartItemEntity(productEntity,userEntity,quantity);
-                if(quantity > productEntity.getStock()) {
-                    throw new CartItemException("Quantity must not more than stock available");
-                }
                 cartItemRepository.save(new CartItemEntity(productEntity, userEntity, quantity));
             }else{
                 CartItemEntity cartItemEntity = optionalCartItemEntity.get(); // get the optionalCart ref address cartItemEntity
-                cartItemEntity.setQuantity(cartItemEntity.getQuantity()+quantity); //cartItemEntity reference quantity + request quantity
-                if(cartItemEntity.getQuantity()> productEntity.getStock()){
-                    throw new CartItemException("Quantity must not larger than stock available");
-                }
-
+                cartItemEntity.setQuantity(cartItemEntity.getQuantity()+ quantity); //cartItemEntity reference quantity + request quantity
+                validateQuantity(cartItemEntity.getQuantity(), productEntity.getStock());
             }
         }catch(Exception ex){
             logger.warn("Put User Cart failed"+ex.getMessage());
@@ -78,7 +73,6 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    @Transactional
     public CartItemResponseData updateCart(Integer pid, Integer quantity, FirebaseUserData firebaseUserData){ //CartItemResponseData no need updateCartItemResponse as there are cart show **quantity with relevant pid only
         try {
             UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
@@ -86,11 +80,9 @@ public class CartItemServiceImpl implements CartItemService {
 
             CartItemEntity cartItemEntity = getEntityByProductAndUser(productEntity, userEntity);
             validateQuantity(quantity, productEntity.getStock());
-//            cartItemRepository.save(new CartItemEntity(productEntity, userEntity, quantity));
             cartItemEntity.setQuantity(quantity);
-            if(cartItemEntity.getQuantity()> productEntity.getStock()){
-                throw new CartItemException("Quantity more than request available in stock");
-            }
+//            cartItemRepository.save(new CartItemEntity(productEntity, userEntity, quantity));
+
             return new CartItemResponseData(cartItemEntity);
 
         }catch(Exception ex){
@@ -101,24 +93,10 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional
-    public boolean removeCartItem(Integer pid, FirebaseUserData firebaseUserData){
-        try {
-            UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
-            ProductEntity productEntity = productService.getEntityByPid(pid);
-            Optional<CartItemEntity> optionalCartItemEntity = cartItemRepository.findByProductAndUser(productEntity, userEntity);
-
-            if(deleteCount<=0){// ==> haven't checked the removal if -ve status exist and raise Exception
-                throw new CartItemException("Delete CartItem failed pid= "+ pid);
-            }
-            for(CartItemEntity cartItemEntity: cartItemRepository.findAll()){
-                if (!productEntity.getPid().equals(pid)) {
-                    continue;
-                }
-                cartItemRepository.delete(cartItemEntity);
-            }
-        }catch(Exception ex){
-            logger.warn("Remove Cart Item "+ex.getMessage());
-            throw ex;
+    public boolean removeCartItem(FirebaseUserData firebaseUserData,Integer pid){ // ==> haven't checked the removal before if -ve status exist and raise Exception
+        Integer deleteCount = cartItemRepository.removeByUser_FirebaseUIdAndProduct_Pid(firebaseUserData.getFirebaseUId(),pid);
+        if(deleteCount<=0){
+            throw new CartItemException("Delete CartItem failed pid= "+ pid);
         }
         return true;
     }
@@ -130,6 +108,9 @@ public class CartItemServiceImpl implements CartItemService {
         return cartItemEntityList;
     }
 
+
+
+
     public CartItemEntity getEntityByProductAndUser(ProductEntity productEntity, UserEntity userEntity){
         return cartItemRepository.findByProductAndUser(productEntity, userEntity).orElseThrow(
                 ()-> new CartItemException("Cart Item Not Found: "+productEntity.getPid()+", "+userEntity.getUid())
@@ -139,13 +120,13 @@ public class CartItemServiceImpl implements CartItemService {
     public void validateQuantity(Integer quantity, Integer stock){
         if(quantity > stock){
             throw new CartItemException(
-                    String.format("Quantity should not more than stock quantity:%d, stock:%d", quantity, stock));
+                    String.format("Quantity should not more than stock quantity-%d, stock-%d", quantity, stock));
         }
     }
 
     @Override
     public void emptyUserCart(String firebaseUId){
-        cartItemRepository.deleteAllByUser(firebaseUId);
+        cartItemRepository.deleteAllByUser_FirebaseUId(firebaseUId);
     }
 
 }

@@ -44,7 +44,7 @@ public class TransactionEntity {
         this.user = user;
         this.transactDate = LocalDateTime.now();
         this.total = BigDecimal.ZERO;
-        this.result = Status.Preparing;
+        this.result = Status.PREPARE;
         this.transactionProductEntityList = transactionProductEntityList;
     }
 

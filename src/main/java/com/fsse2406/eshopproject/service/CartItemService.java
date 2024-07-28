@@ -15,6 +15,6 @@ public interface CartItemService {
      List<CartItemResponseData> getUserCart(FirebaseUserData firebaseUserData);
      List<CartItemEntity> getEntityListByUser(UserEntity userEntity);
      CartItemResponseData updateCart(Integer pid, Integer quantity, FirebaseUserData firebaseUserData);
-     boolean removeCartItem(Integer pid, FirebaseUserData firebaseUserData);
+     boolean removeCartItem(FirebaseUserData firebaseUserData,Integer pid);
      void emptyUserCart(String firebaseUId);
 }

@@ -58,8 +58,8 @@ public class TransactionApi {
     @PatchMapping("/{tid}/finish")
     public TransactionResponseDto finishTransaction(JwtAuthenticationToken jwt,
                                                     @Positive @PathVariable Integer tid){
-        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
-        TransactionResponseData transactionResponseData = transactionService.finishTransaction(firebaseUserData,tid);
-        return new TransactionResponseDto(transactionResponseData);
+//        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwt);
+//        TransactionResponseData transactionResponseData = transactionService.finishTransaction(firebaseUserData,tid);
+        return new TransactionResponseDto(transactionService.finishTransaction(JwtUtil.getFirebaseUserData(jwt),tid));
     }
 }

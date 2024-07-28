@@ -13,6 +13,6 @@ public interface CartItemRepository extends CrudRepository<CartItemEntity, Integ
     Optional<CartItemEntity> findByProductAndUser(ProductEntity product, UserEntity user);
 
     List<CartItemEntity> findAllByUser(UserEntity userEntity);
-    Integer removeByProductAndPid_User(Integer pid, FirebaseUserData firebaseUserData);   // missed to checking the removal Product pid_user in task 6
-    void deleteAllByUser(String firebaseUId);
+    Integer removeByUser_FirebaseUIdAndProduct_Pid(String firebaseUId, Integer pid);   // missed to checking the removal Product pid_user in task 6
+    void deleteAllByUser_FirebaseUId(String firebaseUId);
 }

@@ -70,13 +70,12 @@ public class ProductServiceImpl implements ProductService {
             return false;
         }
         return true;
-
     }
 
     @Override
     public boolean deductStock(Integer amount, Integer pid){ //deductable or not check once the update process of transaction- avoid null pointer exception and paysafe to pervious/teammate handler
         ProductEntity entity = getEntityByPid(pid);
-        if(isValidQuantity(amount,entity)){
+        if(!isValidQuantity(amount,entity.getPid())){
             return false;
         }
         entity.setStock(entity.getStock()-amount);
