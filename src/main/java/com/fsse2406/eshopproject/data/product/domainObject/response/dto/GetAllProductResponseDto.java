@@ -1,6 +1,7 @@
 package com.fsse2406.eshopproject.data.product.domainObject.response.dto;
 
 import com.fsse2406.eshopproject.data.product.data.request.CreateProductRequestData;
+import com.fsse2406.eshopproject.data.product.data.response.ProductResponseData;
 
 import java.math.BigDecimal;
 
@@ -11,7 +12,7 @@ public class GetAllProductResponseDto {
     private BigDecimal price;
     private boolean hasStock;
 
-    public GetAllProductResponseDto(CreateProductRequestData data) {
+    public GetAllProductResponseDto(ProductResponseData data) {
         this.pid = data.getPid();
         this.productname = data.getProductname();
         this.image_url = data.getImage_url();

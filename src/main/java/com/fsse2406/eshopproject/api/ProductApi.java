@@ -1,5 +1,6 @@
 package com.fsse2406.eshopproject.api;
 
+import com.fsse2406.eshopproject.data.product.domainObject.response.dto.GetAllProductResponseDto;
 import com.fsse2406.eshopproject.data.product.dto.response.ProductResponseDto;
 import com.fsse2406.eshopproject.data.product.data.response.ProductResponseData;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin("http://localhost:5173")
 @RequestMapping("/public/product")
 public class ProductApi {
     private final ProductService productService;
@@ -30,14 +32,14 @@ public class ProductApi {
 //    }
 
     @GetMapping
-    public List<ProductResponseDto> getallProducts(){
+    public List<GetAllProductResponseDto> getallProducts(){
 
-        List<ProductResponseData> productResponseDataList = productService.getallProducts();
-        List<ProductResponseDto> productResponseDtoList = new ArrayList<>();
+//        List<ProductResponseData> productResponseDataList = productService.getallProducts();
+        List<GetAllProductResponseDto> productResponseDtoList = new ArrayList<>();
 
-        for (ProductResponseData productResponseData: productResponseDataList){
-            ProductResponseDto productResponseDto  = new ProductResponseDto(productResponseData);
-            productResponseDtoList.add(new ProductResponseDto(productResponseData));
+        for (ProductResponseData productResponseData: productService.getallProducts()){
+//            ProductResponseDto productResponseDto  = new ProductResponseDto(productResponseData);
+            productResponseDtoList.add(new GetAllProductResponseDto(productResponseData));
         }
         return productResponseDtoList;
     }
