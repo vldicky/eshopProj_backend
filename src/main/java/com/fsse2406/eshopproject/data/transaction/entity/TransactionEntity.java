@@ -1,15 +1,12 @@
 package com.fsse2406.eshopproject.data.transaction.entity;
 
-import com.fsse2406.eshopproject.data.cartitem.CartItemEntity;
 import com.fsse2406.eshopproject.data.transaction.Status;
 import com.fsse2406.eshopproject.data.transaction_product.TransactionProductEntity;
 import com.fsse2406.eshopproject.data.user.entity.UserEntity;
 import jakarta.persistence.*;
-import org.springframework.boot.autoconfigure.web.WebProperties;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

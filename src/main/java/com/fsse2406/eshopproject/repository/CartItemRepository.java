@@ -2,7 +2,6 @@ package com.fsse2406.eshopproject.repository;
 
 import com.fsse2406.eshopproject.data.cartitem.CartItemEntity;
 import com.fsse2406.eshopproject.data.product.entity.ProductEntity;
-import com.fsse2406.eshopproject.data.user.domainObject.FirebaseUserData;
 import com.fsse2406.eshopproject.data.user.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 

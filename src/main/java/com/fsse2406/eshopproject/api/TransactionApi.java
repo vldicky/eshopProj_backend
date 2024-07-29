@@ -8,7 +8,6 @@ import com.fsse2406.eshopproject.repository.TransactionRepository;
 import com.fsse2406.eshopproject.service.TransactionService;
 import com.fsse2406.eshopproject.util.JwtUtil;
 import jakarta.validation.constraints.Positive;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;

@@ -18,8 +18,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
 
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
+                .authorizeHttpRequests(auth ->
+                        auth
                                 .requestMatchers("/public/**").permitAll()  // Public paths
                                 .anyRequest().authenticated()           // All other paths require authentication
                 )

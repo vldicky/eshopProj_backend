@@ -1,11 +1,10 @@
 package com.fsse2406.eshopproject.api;
 
-import com.fsse2406.eshopproject.data.cartitem.CartItemEntity;
+
 import com.fsse2406.eshopproject.data.cartitem.data.response.CartItemResponseData;
 import com.fsse2406.eshopproject.data.cartitem.dto.response.CartItemResponseDto;
 import com.fsse2406.eshopproject.data.cartitem.dto.response.SuccessResponseDto;
 import com.fsse2406.eshopproject.data.user.domainObject.FirebaseUserData;
-import com.fsse2406.eshopproject.exception.cart.CartItemNotFoundException;
 import com.fsse2406.eshopproject.repository.CartItemRepository;
 import com.fsse2406.eshopproject.repository.ProductRepository;
 import com.fsse2406.eshopproject.service.CartItemService;

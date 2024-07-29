@@ -2,7 +2,7 @@ package com.fsse2406.eshopproject.api;
 
 import com.fsse2406.eshopproject.data.product.dto.response.ProductResponseDto;
 import com.fsse2406.eshopproject.data.product.data.response.ProductResponseData;
-import com.fsse2406.eshopproject.data.product.entity.ProductEntity;
+
 import com.fsse2406.eshopproject.repository.ProductRepository;
 import com.fsse2406.eshopproject.service.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/public/product")
 public class ProductApi {
     private final ProductService productService;
     private final ProductRepository productRepository;
@@ -29,7 +29,7 @@ public class ProductApi {
 //        return productResponseDto;
 //    }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<ProductResponseDto> getallProducts(){
 
         List<ProductResponseData> productResponseDataList = productService.getallProducts();
