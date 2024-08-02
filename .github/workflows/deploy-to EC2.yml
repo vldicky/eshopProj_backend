@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Build Docker image
-        run: docker build -t Eshopproject_backend .
+        run: docker build -t eshopproject_backend .
       - name: Tag Docker image
         run: docker tag Eshopproject_backend ${{ secrets.DOCKERHUB_USERNAME }}/Eshopproject_backend:${{ github.sha }}
       - name: Push Docker image
