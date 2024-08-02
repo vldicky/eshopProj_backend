@@ -30,9 +30,9 @@ jobs:
       - name: Build Docker image
         run: docker build -t eshopproject_backend .
       - name: Tag Docker image
-        run: docker tag Eshopproject_backend ${{ secrets.DOCKERHUB_USERNAME }}/Eshopproject_backend:${{ github.sha }}
+        run: docker tag eshopproject_backend ${{ secrets.DOCKERHUB_USERNAME }}/eshopproject_backend:${{ github.sha }}
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/Eshopproject_backend:${{ github.sha }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/eshopproject_backend:${{ github.sha }}
       - name: SSH into EC2 instance
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -42,7 +42,7 @@ jobs:
           port: ${{ secrets.EC2_SSH_PORT }}
           script: |
             docker login
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/Eshopproject_backend:${{ github.sha }}
-            docker stop Eshopproject_backend
-            docker rm Eshopproject_backend
-            docker run -d --name Eshopproject_backend -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/Eshopproject_backend:${{ github.sha }}
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/eshopproject_backend:${{ github.sha }}
+            docker stop eshopproject_backend
+            docker rm eshopproject_backend
+            docker run -d --name eshopproject_backend -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/eshopproject_backend:${{ github.sha }}
