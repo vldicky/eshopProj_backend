@@ -1,5 +1,6 @@
 package com.fsse2406.eshopproject.api;
 
+import com.fsse2406.eshopproject.config.DevConfig;
 import com.fsse2406.eshopproject.data.transaction.data.response.TransactionResponseData;
 import com.fsse2406.eshopproject.data.transaction.dto.response.TransactionResponseDto;
 import com.fsse2406.eshopproject.data.transaction.dto.response.TransactionSuccessDto;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/transaction")
+@CrossOrigin({DevConfig.DEV_BSE_URL, DevConfig.PROD_BSE_URL})
 public class TransactionApi {
     private final TransactionService transactionService;
     private final TransactionRepository transactionRepository;

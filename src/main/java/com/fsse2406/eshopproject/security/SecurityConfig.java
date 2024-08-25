@@ -23,6 +23,7 @@ public class SecurityConfig {
                                 .requestMatchers("/public/**").permitAll()  // Public paths
                                 .anyRequest().authenticated()           // All other paths require authentication
                 )
+//                .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable());
 
 

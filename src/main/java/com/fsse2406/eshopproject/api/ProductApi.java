@@ -1,5 +1,6 @@
 package com.fsse2406.eshopproject.api;
 
+import com.fsse2406.eshopproject.config.DevConfig;
 import com.fsse2406.eshopproject.data.product.domainObject.response.dto.GetAllProductResponseDto;
 import com.fsse2406.eshopproject.data.product.dto.response.ProductResponseDto;
 import com.fsse2406.eshopproject.data.product.data.response.ProductResponseData;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin({DevConfig.DEV_BSE_URL, DevConfig.PROD_BSE_URL})
 @RequestMapping("/public/product")
 public class ProductApi {
     private final ProductService productService;
