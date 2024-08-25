@@ -19,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
+//@CrossOrigin(origins="http://localhost:5173")
 @CrossOrigin({DevConfig.DEV_BSE_URL, DevConfig.PROD_BSE_URL})
 public class CartItemApi {
     private final CartItemService cartItemService;

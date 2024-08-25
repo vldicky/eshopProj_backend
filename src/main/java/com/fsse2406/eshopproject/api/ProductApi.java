@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+//@CrossOrigin(origins="http://localhost:5173")
 @CrossOrigin({DevConfig.DEV_BSE_URL, DevConfig.PROD_BSE_URL})
 @RequestMapping("/public/product")
 public class ProductApi {
