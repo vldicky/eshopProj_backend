@@ -11,7 +11,7 @@ public class CartItemResponseDto {
     private String productName;
     private String imageUrl;
     private BigDecimal price;
-    private Integer quantity;
+    private Integer cartQuantity;
     private Integer stock;
 
     public CartItemResponseDto(CartItemResponseData data) {
@@ -19,7 +19,7 @@ public class CartItemResponseDto {
         this.productName = data.getProduct().getProductname();
         this.imageUrl = data.getProduct().getImage_url();
         this.price = data.getProduct().getPrice();
-        this.quantity = data.getQuantity();
+        this.cartQuantity = data.getQuantity();
         this.stock = data.getProduct().getStock();
     }
 
@@ -55,12 +55,12 @@ public class CartItemResponseDto {
         this.price = price;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public Integer getCartQuantity() {
+        return cartQuantity;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setCartQuantity(Integer cartQuantity) {
+        this.cartQuantity = cartQuantity;
     }
 
     public Integer getStock() {
