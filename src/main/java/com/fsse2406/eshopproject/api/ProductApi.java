@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-//@CrossOrigin(origins="http://localhost:5173")
-@CrossOrigin({EnvConfig.DEV_BSE_URL, EnvConfig.PROD_BSE_URL})
 @RequestMapping("/public/product")
+@CrossOrigin({EnvConfig.DEV_BSE_URL, EnvConfig.PROD_BSE_URL})
 public class ProductApi {
     private final ProductService productService;
     private final ProductRepository productRepository;
